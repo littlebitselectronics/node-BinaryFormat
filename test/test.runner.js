@@ -6,5 +6,5 @@ testrunner.options.summary = false;
 testrunner.options.coverage = false;
 testrunner.run({
 	code: '../src/jparser.js',
-	tests: './test.js'
+	tests: './testjparser.js'
 });
