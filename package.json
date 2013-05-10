@@ -1,0 +1,34 @@
+{
+  "name": "BinaryFormat",
+  "version": "0.0.0",
+  "description": "Two-way custom binary seralization",
+  "main": "src/jprinter.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha ntest/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/RobertBorg/node-BinaryFormat.git"
+  },
+  "keywords": [
+    "binary",
+    "struct",
+    "parse",
+    "seralization",
+    "deseralization"
+  ],
+  "author": "Robert Borg",
+  "license": "",
+  "readmeFilename": "README.md",
+  "gitHead": "cb9ff1c3f31cbdebb8e8a5be3f3be13dbda0b0c4",
+  "dependencies": {
+    "jDataView": "git://github.com/vjeux/jDataView.git"
+  },
+  "devDependencies": {
+    "mocha": "",
+    "should": ""
+  }
+}
