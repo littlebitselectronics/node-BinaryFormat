@@ -55,8 +55,9 @@ jPrinter.prototype.structure = {
 		this.view.writeString(data);
 	},
 	array: function (type, length, data) {
-		for (var i = 0; i < data.length; ++i) {
-			this.parse(type, data[i]);
+		var arr = Array.prototype.slice.call(arguments, 2);
+		for (var i = 0; i < arr.length; ++i) {
+			this.parse(type, arr[i]);
 		}
 	},
 	seek: function (position, block) {
@@ -91,7 +92,7 @@ jPrinter.prototype.tell = jPrinter.prototype.structure.tell;
 jPrinter.prototype.skip = jPrinter.prototype.structure.skip;
 
 jPrinter.prototype.parse = function (structure, currentValue) {
-	if (typeof structure === 'number') {
+	/*if (typeof structure === 'number') {
 		var fieldValue = 0,
 			bitSize = structure;
 
@@ -113,6 +114,15 @@ jPrinter.prototype.parse = function (structure, currentValue) {
 			fieldValue = ((this.view.getUint8() >>> (8 - (this._bitShift + bitSize))) & ~(-1 << bitSize)) | (fieldValue << bitSize);
 			this._bitShift += bitSize - 8; // passing negative value for next pass
 		}
+	}*/
+
+	// ['string', 256] means structure['string'](256)
+	if (structure instanceof Array) {
+		var key = structure[0];
+		if (!(key in this.structure)) {
+			throw new Error("Missing structure for `" + key + "`");
+		}
+		return this.parse.apply(this, [this.structure[key]].concat(structure.slice(1), currentValue));
 
 		return fieldValue;
 	}
@@ -144,7 +154,7 @@ jPrinter.prototype.parse = function (structure, currentValue) {
 		this.current = output;
 
 		for (var key in structure) {
-			var value = this.parse(structure[key], output[key]);
+			var value = this.parse(structure[key], currentValue[key]);
 			// skipping undefined call results (useful for 'if' statement)
 			//if (value !== undefined) {
 			//	output[key] = value;
