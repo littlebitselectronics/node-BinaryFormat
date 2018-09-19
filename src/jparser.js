@@ -1,8 +1,6 @@
-(function () {
-	if (typeof jDataView === 'undefined' && typeof require !== 'undefined') {
-		jDataView = require('jDataView')
-	}
+import jDataView from 'jDataView'
 
+(function () {
 	// Extend code from underscorejs (modified for fast inheritance using prototypes)
 	function inherit(obj) {
 		if ('create' in Object) {
@@ -26,10 +24,6 @@
 	}
 
 	function jParser(view, structure) {
-		if (!(this instanceof arguments.callee)) {
-			throw new Error("Constructor may not be called as a function")
-		}
-
 		if (!(view instanceof jDataView)) {
 			view = new jDataView(view, undefined, undefined, true)
 		}

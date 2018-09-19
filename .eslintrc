@@ -1,0 +1,64 @@
+{
+  "extends": "eslint-config-airbnb",
+  "parser": "babel-eslint",
+  "plugins": [
+    "babel"
+  ],
+  "rules": {
+    "arrow-parens": [2, "as-needed", {
+      "requireForBlockBody": false
+    }],
+    "implicit-arrow-linebreak": 0,
+    "import/extensions": 0,
+    "import/no-extraneous-dependencies": 0,
+    "import/no-unresolved": [2, {
+      "ignore": ["electron", "~/*"]
+    }],
+    "key-spacing": [2, {
+      "beforeColon": false,
+      "afterColon": true,
+      "mode": "minimum",
+      "align": "value"
+    }],
+    "linebreak-style": 0,
+    "no-continue": 0,
+    "no-extra-semi": 0,
+    "no-multi-spaces": ["error", {
+      "ignoreEOLComments": true,
+      "exceptions": {
+        "Property": true
+      }
+    }],
+    "no-plusplus": ["error", {
+      "allowForLoopAfterthoughts": true
+    }],
+    "no-unused-vars": ["error", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
+    "object-curly-newline": ["error", {
+      "ObjectExpression": {
+        "multiline": true
+      },
+      "ObjectPattern": {
+        "multiline": true
+      },
+      "ImportDeclaration": {
+        "multiline": true
+      },
+      "ExportDeclaration": {
+        "multiline": true
+      }
+    }],
+    "operator-linebreak": ["error", "after", {
+      "overrides": {
+        "=": "after"
+      }
+    }],
+    "react/jsx-filename-extension": [1, {
+      "extensions": [".js", ".jsx"]
+    }],
+    "react/prefer-stateless-function": 0,
+    "semi": 0
+  }
+}

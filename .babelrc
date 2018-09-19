@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    "babel-plugin-root-import",
+    "transform-class-properties",
+    "transform-object-rest-spread"
+  ],
+
+  "presets": ["env"]
+}
