@@ -21,9 +21,11 @@
     "deseralization"
   ],
   "author": "Robert Borg",
+  "contributors": [
+    "Dave Newton <davelnewton@gmail.com>"
+  ],
   "license": "",
   "readmeFilename": "README.md",
-  "gitHead": "cb9ff1c3f31cbdebb8e8a5be3f3be13dbda0b0c4",
   "dependencies": {
     "jDataView": "git://github.com/vjeux/jDataView.git"
   },

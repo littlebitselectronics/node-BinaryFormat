@@ -7,6 +7,10 @@
 * ❏ Distro
 * ❏ Update docs
 
+## Notes
+
+* `jprinter.js` is not currently used; it's all in the original `jsparser.js`
+
 ---
 
 # <a href="http://blog.vjeux.com/2011/javascript/binaryparser-unleash-javascript-power.html">jParser</a> - Parsing binary files made easy.
