@@ -8,6 +8,34 @@ const parser = new jParser(view)
 
 const chr = x => String.fromCharCode(x)
 
+describe('Writing', () => {
+	const tempBuffer = new Buffer(128)
+	const tempView = new jDataView(tempBuffer, 1, undefined, true)
+	const tempParser = new jParser(tempView)
+
+	const testStruct = {
+		type:      2,
+		subType:   6,
+		id:        8,
+		numInputs: 2,
+		snaps:     6,
+	}
+
+	const input = {
+		type:      2,
+		subType:   8,
+		id:        60,
+		numInputs: 1,
+		snaps:     18,
+	}
+
+	test('Write object', () => {
+		tempParser.seek(0)
+		tempParser.parse(testStruct, input)
+		expect(tempBuffer.slice(1,4)).toEqual([136, 60, 82])
+	})
+})
+
 describe('Values', () => {
 	test('uint', () => {
 		parser.seek(0)
@@ -16,7 +44,7 @@ describe('Values', () => {
 		expect(parser.parse('uint16')).toBe(65022)
 		expect(parser.parse('uint32')).toBe(3120626428)
 	})
-	
+
 	test('int', () => {
 		parser.seek(0)
 
@@ -24,7 +52,7 @@ describe('Values', () => {
 		expect(parser.parse('int16')).toBe(-514)
 		expect(parser.parse('int32')).toBe(-1174340868)
 	})
-	
+
 	test('float', () => {
 		parser.seek(0)
 		expect(parser.parse('float32')).toBe(-1.055058432344064e+37)
@@ -32,14 +60,14 @@ describe('Values', () => {
 		parser.seek(0)
 		expect(parser.parse('float64')).toBe(2.426842827241402e-300)
 	})
-	
+
 	test('string', () => {
 		parser.seek(5)
 
 		expect(parser.parse('char')).toBe(chr(0x00))
 		expect(parser.parse(['string', 2])).toBe(chr(0xba) + chr(0x01))
 	})
-	
+
 	test('array', () => {
 		parser.seek(0)
 		expect(parser.parse(['array', 'uint8', 8])).toEqual([0xff, 0xfe, 0xfd, 0xfc, 0xfa, 0x00, 0xba, 0x01])
@@ -47,7 +75,7 @@ describe('Values', () => {
 		parser.seek(0)
 		expect(parser.parse(['array', 'int32', 2])).toEqual([-50462977, 28967162])
 	})
-	
+
 	test('object', () => {
 		parser.seek(0)
 
@@ -61,7 +89,7 @@ describe('Values', () => {
 			c: [0, 186]
 		})
 	})
-	
+
 	test('bitfield', () => {
 		parser.seek(6)
 
@@ -92,7 +120,7 @@ describe('Utils', () => {
 
 		parser.seek(parser.tell() - 2)
 		expect(parser.tell()).toBe(3)
-	
+
 		parser.seek(5, () => {
 			expect(parser.tell()).toBe(5)
 			parser.seek(0)
