@@ -55,9 +55,9 @@ import jDataView from 'jDataView'
 
 		array: function (type, length) {
 			length = toInt.call(this, length)
-			var results = []
+			let results = []
 			
-			for (var i = 0; i < length; ++i) {
+			for (let i = 0; i < length; ++i) {
 				results.push(this.parse(type))
 			}
 
@@ -68,9 +68,10 @@ import jDataView from 'jDataView'
 			position = toInt.call(this, position)
 
 			if (block instanceof Function) {
-				var old_position = this.view.tell()
+				const old_position = this.view.tell()
 				this.view.seek(position)
-				var result = block.call(this)
+
+				const result = block.call(this)
 				this.view.seek(old_position)
 				return result
 			} else {
@@ -101,11 +102,12 @@ import jDataView from 'jDataView'
 
 	jParser.prototype.parse = function (structure) {
 		if (typeof structure === 'number') {
-			var fieldValue = 0
-			var bitSize = structure
+			let fieldValue = 0
+			let bitSize = structure
 
 			if (this._bitShift < 0) {
-				var byteShift = this._bitShift >> 3 // Math.floor(_bitShift / 8)
+				const byteShift = this._bitShift >> 3 // Math.floor(_bitShift / 8)
+
 				this.skip(byteShift)
 				this._bitShift &= 7 // _bitShift + 8 * Math.floor(_bitShift / 8)
 			}
@@ -141,19 +143,19 @@ import jDataView from 'jDataView'
 
 		// ['string', 256] means structure['string'](256)
 		if (structure instanceof Array) {
-			var key = structure[0]
+			const key = structure[0]
 			
 			if (!(key in this.structure)) {
-				throw new Error("Missing structure for `" + key + "`")
+				throw new Error(`Missing structure for "${key}"`)
 			}
-			return this.parse.apply(this, [this.structure[key]].concat(structure.slice(1)))
 
+			return this.parse.apply(this, [this.structure[key]].concat(structure.slice(1)))
 		}
 
 		// {key: val} means {key: parse(val)}
 		if (typeof structure === 'object') {
-			var output = {},
-				current = this.current
+			let output = {}
+			let current = this.current
 
 			this.current = output
 
@@ -170,10 +172,10 @@ import jDataView from 'jDataView'
 			return output
 		}
 
-		throw new Error("Unknown structure type `" + structure + "`")
+		throw new Error(`Unknown structure type "${structure}"`)
 	}
 
-	var all
+	let all
 	if (typeof self !== 'undefined') {
 		all = self
 	} else if (typeof window !== 'undefined') {
