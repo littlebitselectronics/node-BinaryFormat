@@ -2,7 +2,7 @@
   "name": "BinaryFormat",
   "version": "0.0.1",
   "description": "Two-way custom binary seralization",
-  "main": "src/jprinter.js",
+  "main": "src/jparser.js",
   "directories": {
     "test": "test"
   },
