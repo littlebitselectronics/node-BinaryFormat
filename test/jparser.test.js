@@ -2,18 +2,14 @@ import jDataView from 'jDataView'
 
 import jParser from '~/src/jparser'
 
-// console.log(jDataView)
+const buffer = jDataView.from(0x00, 0xff, 0xfe, 0xfd, 0xfc, 0xfa, 0x00, 0xba, 0x01)
+const view = new jDataView(buffer, 1, undefined, true)
+const parser = new jParser(view)
 
-var buffer = jDataView.from(0x00, 0xff, 0xfe, 0xfd, 0xfc, 0xfa, 0x00, 0xba, 0x01)
-var view = new jDataView(buffer, 1, undefined, true)
-var parser = new jParser(view)
-
-function chr(x) {
-	return String.fromCharCode(x);
-}
+const chr = x => String.fromCharCode(x)
 
 describe('Values', () => {
-	test('uint', function () {
+	test('uint', () => {
 		parser.seek(0)
 
 		expect(parser.parse('uint8')).toBe(255)
@@ -21,7 +17,7 @@ describe('Values', () => {
 		expect(parser.parse('uint32')).toBe(3120626428)
 	})
 	
-	test('int', function () {
+	test('int', () => {
 		parser.seek(0)
 
 		expect(parser.parse('int8')).toBe(-1)
@@ -29,7 +25,7 @@ describe('Values', () => {
 		expect(parser.parse('int32')).toBe(-1174340868)
 	})
 	
-	test('float', function () {
+	test('float', () => {
 		parser.seek(0)
 		expect(parser.parse('float32')).toBe(-1.055058432344064e+37)
 
@@ -37,14 +33,14 @@ describe('Values', () => {
 		expect(parser.parse('float64')).toBe(2.426842827241402e-300)
 	})
 	
-	test('string', function () {
+	test('string', () => {
 		parser.seek(5)
 
 		expect(parser.parse('char')).toBe(chr(0x00))
 		expect(parser.parse(['string', 2])).toBe(chr(0xba) + chr(0x01))
 	})
 	
-	test('array', function () {
+	test('array', () => {
 		parser.seek(0)
 		expect(parser.parse(['array', 'uint8', 8])).toEqual([0xff, 0xfe, 0xfd, 0xfc, 0xfa, 0x00, 0xba, 0x01])
 
@@ -52,7 +48,7 @@ describe('Values', () => {
 		expect(parser.parse(['array', 'int32', 2])).toEqual([-50462977, 28967162])
 	})
 	
-	test('object', function () {
+	test('object', () => {
 		parser.seek(0)
 
 		expect(parser.parse({
@@ -66,24 +62,7 @@ describe('Values', () => {
 		})
 	})
 	
-	test('seek', function () {
-		parser.seek(5)
-		expect(parser.tell()).toBe(5)
-
-		parser.seek(parser.tell() - 2)
-		expect(parser.tell()).toBe(3)
-	
-		parser.seek(5, function () {
-			expect(parser.tell()).toBe(5)
-			parser.seek(0)
-			expect(parser.tell()).toBe(0)
-		})
-
-		expect(parser.tell()).toBe(3)
-	})
-	
-	
-	test('bitfield', function () {
+	test('bitfield', () => {
 		parser.seek(6)
 
 		expect(parser.parse({
@@ -103,5 +82,23 @@ describe('Values', () => {
 				last3: 1
 			}
 		})
+	})
+})
+
+describe('Utils', () => {
+	test('seek', () => {
+		parser.seek(5)
+		expect(parser.tell()).toBe(5)
+
+		parser.seek(parser.tell() - 2)
+		expect(parser.tell()).toBe(3)
+	
+		parser.seek(5, () => {
+			expect(parser.tell()).toBe(5)
+			parser.seek(0)
+			expect(parser.tell()).toBe(0)
+		})
+
+		expect(parser.tell()).toBe(3)
 	})
 })
