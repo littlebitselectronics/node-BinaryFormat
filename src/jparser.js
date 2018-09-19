@@ -23,19 +23,20 @@ import jDataView from 'jDataView'
 		return obj
 	}
 
-	function jParser(view, structure) {
-		if (!(view instanceof jDataView)) {
-			view = new jDataView(view, undefined, undefined, true)
+	const toInt = val => val instanceof Function ? val.call(this) : val
+
+	class jParser {
+		constructor(view, structure) {
+			if (!(view instanceof jDataView)) {
+				view = new jDataView(view, undefined, undefined, true)
+			}
+
+			this.view = view
+			this.view.seek(0)
+
+			this._bitShift = 0
+			this.structure = inherit(jParser.prototype.structure, structure)
 		}
-
-		this.view = view
-		this.view.seek(0)
-		this._bitShift = 0
-		this.structure = inherit(jParser.prototype.structure, structure)
-	}
-
-	function toInt(val) {
-		return val instanceof Function ? val.call(this) : val
 	}
 
 	jParser.prototype.structure = {
