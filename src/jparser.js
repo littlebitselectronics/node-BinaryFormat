@@ -1,195 +1,192 @@
 import jDataView from 'jDataView'
 
-(function () {
-	// Extend code from underscorejs (modified for fast inheritance using prototypes)
-	function inherit(obj) {
-		if ('create' in Object) {
-			obj = Object.create(obj)
-		} else {
-			function ClonedObject() {}
-			ClonedObject.prototype = obj
-			obj = new ClonedObject()
-		}
+function ClonedObject() {}
 
-		for (var i = 1; i < arguments.length; ++i) {
-			var source = arguments[i]
-			for (var prop in source) {
-				if (source[prop] !== undefined) {
-					obj[prop] = source[prop]
-				}
-			}
-		}
+// Extend code from underscorejs (modified for fast inheritance using prototypes)
+function inherit(obj) {
+  let xObj
 
-		return obj
-	}
+  if ('create' in Object) {
+    xObj = Object.create(obj)
+  } else {
+    ClonedObject.prototype = obj
+    xObj = new ClonedObject()
+  }
 
-	const toInt = val => val instanceof Function ? val.call(this) : val
+  for (let i = 1; i < arguments.length; ++i) {
+    const source = arguments[i]
+    for (const prop in source) {
+      if (source[prop] !== undefined) {
+        xObj[prop] = source[prop]
+      }
+    }
+  }
 
-	class jParser {
-		constructor(view, structure) {
-			if (!(view instanceof jDataView)) {
-				view = new jDataView(view, undefined, undefined, true)
-			}
+  return xObj
+}
 
-			this.view = view
-			this.view.seek(0)
+const toInt = val => (val instanceof Function ? val.call(this) : val)
 
-			this._bitShift = 0
-			this.structure = inherit(jParser.prototype.structure, structure)
-		}
-	}
+class jParser {
+  constructor(view, structure) {
+    let xView = view
 
-	jParser.prototype.structure = {
-		uint8:   function () { return this.view.getUint8() 		},
-		uint16:  function () { return this.view.getUint16() 	},
-		uint32:  function () { return this.view.getUint32() 	},
-		int8:    function () { return this.view.getInt8() 		},
-		int16:   function () { return this.view.getInt16() 		},
-		int32:   function () { return this.view.getInt32() 		},
-		float32: function () { return this.view.getFloat32() 	},
-		float64: function () { return this.view.getFloat64()	},
-		char:    function () { return this.view.getChar()			},
+    if (!(xView instanceof jDataView)) {
+      xView = new jDataView(view, undefined, undefined, true)
+    }
 
-		string: function (length) {
-			return this.view.getString(toInt.call(this, length))
-		},
+    this.view = xView
+    this.view.seek(0)
 
-		array: function (type, length) {
-			length = toInt.call(this, length)
-			let results = []
-			
-			for (let i = 0; i < length; ++i) {
-				results.push(this.parse(type))
-			}
+    this._bitShift = 0
+    this.structure = inherit(jParser.prototype.structure, structure)
+  }
 
-			return results
-		},
+  seek(position, block) {
+    const newPosition = toInt.call(this, position)
 
-		seek: function (position, block) {
-			position = toInt.call(this, position)
+    if (block instanceof Function) {
+      const oldPosition = this.view.tell()
+      this.view.seek(newPosition)
 
-			if (block instanceof Function) {
-				const old_position = this.view.tell()
-				this.view.seek(position)
+      const result = block.call(this)
+      this.view.seek(oldPosition)
+      return result
+    }
 
-				const result = block.call(this)
-				this.view.seek(old_position)
-				return result
-			} else {
-				return this.view.seek(position)
-			}
-		},
+    return this.view.seek(newPosition)
+  }
 
-		tell: function () {
-			return this.view.tell()
-		},
+  tell() { return this.view.tell() }
 
-		skip: function (offset) {
-			offset = toInt.call(this, offset)
-			this.view.seek(this.view.tell() + offset)
-			return offset
-		},
+  skip(offset) {
+    const newOffset = toInt.call(this, offset)
+    this.view.seek(this.view.tell() + newOffset)
+    return newOffset
+  }
+}
 
-		if: function (predicate) {
-			if (predicate instanceof Function ? predicate.call(this) : predicate) {
-				return this.parse.apply(this, Array.prototype.slice.call(arguments, 1))
-			}
-		}
-	};
+jParser.prototype.structure = {
+  uint8:   function () { return this.view.getUint8() },
+  uint16:  function () { return this.view.getUint16() },
+  uint32:  function () { return this.view.getUint32() },
+  int8:    function () { return this.view.getInt8() },
+  int16:   function () { return this.view.getInt16() },
+  int32:   function () { return this.view.getInt32() },
+  float32: function () { return this.view.getFloat32() },
+  float64: function () { return this.view.getFloat64() },
+  char:    function () { return this.view.getChar() },
 
-	jParser.prototype.seek = jParser.prototype.structure.seek
-	jParser.prototype.tell = jParser.prototype.structure.tell
-	jParser.prototype.skip = jParser.prototype.structure.skip
+  string: function (length) {
+    return this.view.getString(toInt.call(this, length))
+  },
 
-	jParser.prototype.parse = function (structure) {
-		if (typeof structure === 'number') {
-			let fieldValue = 0
-			let bitSize = structure
+  array: function (type, length) {
+    length = toInt.call(this, length)
+    let results = []
 
-			if (this._bitShift < 0) {
-				const byteShift = this._bitShift >> 3 // Math.floor(_bitShift / 8)
+    for (let i = 0; i < length; ++i) {
+      results.push(this.parse(type))
+    }
 
-				this.skip(byteShift)
-				this._bitShift &= 7 // _bitShift + 8 * Math.floor(_bitShift / 8)
-			}
+    return results
+  },
 
-			if (this._bitShift > 0 && bitSize >= 8 - this._bitShift) {
-				fieldValue = this.view.getUint8() & ~(-1 << (8 - this._bitShift))
-				bitSize -= 8 - this._bitShift
-				this._bitShift = 0
-			}
-			
-			while (bitSize >= 8) {
-				fieldValue = this.view.getUint8() | (fieldValue << 8)
-				bitSize -= 8
-			}
+  if: function (predicate) {
+    if (predicate instanceof Function ? predicate.call(this) : predicate) {
+      return this.parse.apply(this, Array.prototype.slice.call(arguments, 1))
+    }
+  },
+};
 
-			if (bitSize > 0) {
-				fieldValue = ((this.view.getUint8() >>> (8 - (this._bitShift + bitSize))) & ~(-1 << bitSize)) | (fieldValue << bitSize)
-				this._bitShift += bitSize - 8 // passing negative value for next pass
-			}
+jParser.prototype.parse = function (structure) {
+  if (typeof structure === 'number') {
+    let fieldValue = 0
+    let bitSize = structure
 
-			return fieldValue
-		}
+    if (this._bitShift < 0) {
+      const byteShift = this._bitShift >> 3 // Math.floor(_bitShift / 8)
 
-		// f, 1, 2 means f(1, 2)
-		if (structure instanceof Function) {
-			return structure.apply(this, Array.prototype.slice.call(arguments, 1))
-		}
+      this.skip(byteShift)
+      this._bitShift &= 7 // _bitShift + 8 * Math.floor(_bitShift / 8)
+    }
 
-		// 'int32', ... is a shortcut for ['int32', ...]
-		if (typeof structure === 'string') {
-			structure = Array.prototype.slice.call(arguments)
-		}
+    if (this._bitShift > 0 && bitSize >= 8 - this._bitShift) {
+      fieldValue = this.view.getUint8() & ~(-1 << (8 - this._bitShift))
+      bitSize -= 8 - this._bitShift
+      this._bitShift = 0
+    }
 
-		// ['string', 256] means structure['string'](256)
-		if (structure instanceof Array) {
-			const key = structure[0]
-			
-			if (!(key in this.structure)) {
-				throw new Error(`Missing structure for "${key}"`)
-			}
+    while (bitSize >= 8) {
+      fieldValue = this.view.getUint8() | (fieldValue << 8)
+      bitSize -= 8
+    }
 
-			return this.parse.apply(this, [this.structure[key]].concat(structure.slice(1)))
-		}
+    if (bitSize > 0) {
+      fieldValue = ((this.view.getUint8() >>> (8 - (this._bitShift + bitSize))) & ~(-1 << bitSize)) | (fieldValue << bitSize)
+      this._bitShift += bitSize - 8 // passing negative value for next pass
+    }
 
-		// {key: val} means {key: parse(val)}
-		if (typeof structure === 'object') {
-			let output = {}
-			let current = this.current
+    return fieldValue
+  }
 
-			this.current = output
+  // f, 1, 2 means f(1, 2)
+  if (structure instanceof Function) {
+    return structure.apply(this, Array.prototype.slice.call(arguments, 1))
+  }
 
-			for (var key in structure) {
-				var value = this.parse(structure[key])
-				// skipping undefined call results (useful for 'if' statement)
-				if (value !== undefined) {
-					output[key] = value
-				}
-			}
+  // 'int32', ... is a shortcut for ['int32', ...]
+  if (typeof structure === 'string') {
+    structure = Array.prototype.slice.call(arguments)
+  }
 
-			this.current = current
+  // ['string', 256] means structure['string'](256)
+  if (structure instanceof Array) {
+    const key = structure[0]
 
-			return output
-		}
+    if (!(key in this.structure)) {
+      throw new Error(`Missing structure for "${key}"`)
+    }
 
-		throw new Error(`Unknown structure type "${structure}"`)
-	}
+    return this.parse.apply(this, [this.structure[key]].concat(structure.slice(1)))
+  }
 
-	let all
-	if (typeof self !== 'undefined') {
-		all = self
-	} else if (typeof window !== 'undefined') {
-		all = window
-	} else if (typeof global !== 'undefined') {
-		all = global
-	}
+  // {key: val} means {key: parse(val)}
+  if (typeof structure === 'object') {
+    const output = {}
+    const current = this.current
 
-	// Browser + Web Worker
-	all.jParser = jParser
+    this.current = output
 
-	// NodeJS + NPM
-	if (typeof module !== 'undefined') {
-		module.exports = jParser
-	}
-})()
+    for (const key in structure) {
+      const value = this.parse(structure[key])
+      // skipping undefined call results (useful for 'if' statement)
+      if (value !== undefined) {
+        output[key] = value
+      }
+    }
+
+    this.current = current
+
+    return output
+  }
+
+  throw new Error(`Unknown structure type "${structure}"`)
+}
+
+let all
+if (typeof self !== 'undefined') {
+  all = self
+} else if (typeof window !== 'undefined') {
+  all = window
+} else if (typeof global !== 'undefined') {
+  all = global
+}
+
+// Browser + Web Worker
+all.jParser = jParser
+
+// NodeJS + NPM
+if (typeof module !== 'undefined') {
+  module.exports = jParser
+}

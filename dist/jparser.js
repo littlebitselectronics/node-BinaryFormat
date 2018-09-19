@@ -2,220 +2,234 @@
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _jDataView = require('jDataView');
 
 var _jDataView2 = _interopRequireDefault(_jDataView);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(function () {
-	// Extend code from underscorejs (modified for fast inheritance using prototypes)
-	function inherit(obj) {
-		if ('create' in Object) {
-			obj = Object.create(obj);
-		} else {
-			var ClonedObject = function ClonedObject() {};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-			ClonedObject.prototype = obj;
-			obj = new ClonedObject();
-		}
+function ClonedObject() {}
 
-		for (var i = 1; i < arguments.length; ++i) {
-			var source = arguments[i];
-			for (var prop in source) {
-				if (source[prop] !== undefined) {
-					obj[prop] = source[prop];
-				}
-			}
-		}
+// Extend code from underscorejs (modified for fast inheritance using prototypes)
+function inherit(obj) {
+  var xObj = void 0;
 
-		return obj;
-	}
+  if ('create' in Object) {
+    xObj = Object.create(obj);
+  } else {
+    ClonedObject.prototype = obj;
+    xObj = new ClonedObject();
+  }
 
-	function jParser(view, structure) {
-		if (!(view instanceof _jDataView2.default)) {
-			view = new _jDataView2.default(view, undefined, undefined, true);
-		}
+  for (var i = 1; i < arguments.length; ++i) {
+    var source = arguments[i];
+    for (var prop in source) {
+      if (source[prop] !== undefined) {
+        xObj[prop] = source[prop];
+      }
+    }
+  }
 
-		this.view = view;
-		this.view.seek(0);
-		this._bitShift = 0;
-		this.structure = inherit(jParser.prototype.structure, structure);
-	}
+  return xObj;
+}
 
-	function toInt(val) {
-		return val instanceof Function ? val.call(this) : val;
-	}
+var toInt = function toInt(val) {
+  return val instanceof Function ? val.call(undefined) : val;
+};
 
-	jParser.prototype.structure = {
-		uint8: function uint8() {
-			return this.view.getUint8();
-		},
-		uint16: function uint16() {
-			return this.view.getUint16();
-		},
-		uint32: function uint32() {
-			return this.view.getUint32();
-		},
-		int8: function int8() {
-			return this.view.getInt8();
-		},
-		int16: function int16() {
-			return this.view.getInt16();
-		},
-		int32: function int32() {
-			return this.view.getInt32();
-		},
-		float32: function float32() {
-			return this.view.getFloat32();
-		},
-		float64: function float64() {
-			return this.view.getFloat64();
-		},
-		char: function char() {
-			return this.view.getChar();
-		},
+var jParser = function () {
+  function jParser(view, structure) {
+    _classCallCheck(this, jParser);
 
-		string: function string(length) {
-			return this.view.getString(toInt.call(this, length));
-		},
+    var xView = view;
 
-		array: function array(type, length) {
-			length = toInt.call(this, length);
-			var results = [];
+    if (!(xView instanceof _jDataView2.default)) {
+      xView = new _jDataView2.default(view, undefined, undefined, true);
+    }
 
-			for (var i = 0; i < length; ++i) {
-				results.push(this.parse(type));
-			}
+    this.view = xView;
+    this.view.seek(0);
 
-			return results;
-		},
+    this._bitShift = 0;
+    this.structure = inherit(jParser.prototype.structure, structure);
+  }
 
-		seek: function seek(position, block) {
-			position = toInt.call(this, position);
+  _createClass(jParser, [{
+    key: 'seek',
+    value: function seek(position, block) {
+      var newPosition = toInt.call(this, position);
 
-			if (block instanceof Function) {
-				var old_position = this.view.tell();
-				this.view.seek(position);
+      if (block instanceof Function) {
+        var oldPosition = this.view.tell();
+        this.view.seek(newPosition);
 
-				var result = block.call(this);
-				this.view.seek(old_position);
-				return result;
-			} else {
-				return this.view.seek(position);
-			}
-		},
+        var result = block.call(this);
+        this.view.seek(oldPosition);
+        return result;
+      }
 
-		tell: function tell() {
-			return this.view.tell();
-		},
+      return this.view.seek(newPosition);
+    }
+  }, {
+    key: 'tell',
+    value: function tell() {
+      return this.view.tell();
+    }
+  }, {
+    key: 'skip',
+    value: function skip(offset) {
+      var newOffset = toInt.call(this, offset);
+      this.view.seek(this.view.tell() + newOffset);
+      return newOffset;
+    }
+  }]);
 
-		skip: function skip(offset) {
-			offset = toInt.call(this, offset);
-			this.view.seek(this.view.tell() + offset);
-			return offset;
-		},
+  return jParser;
+}();
 
-		if: function _if(predicate) {
-			if (predicate instanceof Function ? predicate.call(this) : predicate) {
-				return this.parse.apply(this, Array.prototype.slice.call(arguments, 1));
-			}
-		}
-	};
+jParser.prototype.structure = {
+  uint8: function uint8() {
+    return this.view.getUint8();
+  },
+  uint16: function uint16() {
+    return this.view.getUint16();
+  },
+  uint32: function uint32() {
+    return this.view.getUint32();
+  },
+  int8: function int8() {
+    return this.view.getInt8();
+  },
+  int16: function int16() {
+    return this.view.getInt16();
+  },
+  int32: function int32() {
+    return this.view.getInt32();
+  },
+  float32: function float32() {
+    return this.view.getFloat32();
+  },
+  float64: function float64() {
+    return this.view.getFloat64();
+  },
+  char: function char() {
+    return this.view.getChar();
+  },
 
-	jParser.prototype.seek = jParser.prototype.structure.seek;
-	jParser.prototype.tell = jParser.prototype.structure.tell;
-	jParser.prototype.skip = jParser.prototype.structure.skip;
+  string: function string(length) {
+    return this.view.getString(toInt.call(this, length));
+  },
 
-	jParser.prototype.parse = function (structure) {
-		if (typeof structure === 'number') {
-			var fieldValue = 0;
-			var bitSize = structure;
+  array: function array(type, length) {
+    length = toInt.call(this, length);
+    var results = [];
 
-			if (this._bitShift < 0) {
-				var byteShift = this._bitShift >> 3; // Math.floor(_bitShift / 8)
+    for (var i = 0; i < length; ++i) {
+      results.push(this.parse(type));
+    }
 
-				this.skip(byteShift);
-				this._bitShift &= 7; // _bitShift + 8 * Math.floor(_bitShift / 8)
-			}
+    return results;
+  },
 
-			if (this._bitShift > 0 && bitSize >= 8 - this._bitShift) {
-				fieldValue = this.view.getUint8() & ~(-1 << 8 - this._bitShift);
-				bitSize -= 8 - this._bitShift;
-				this._bitShift = 0;
-			}
+  if: function _if(predicate) {
+    if (predicate instanceof Function ? predicate.call(this) : predicate) {
+      return this.parse.apply(this, Array.prototype.slice.call(arguments, 1));
+    }
+  }
+};
 
-			while (bitSize >= 8) {
-				fieldValue = this.view.getUint8() | fieldValue << 8;
-				bitSize -= 8;
-			}
+jParser.prototype.parse = function (structure) {
+  if (typeof structure === 'number') {
+    var fieldValue = 0;
+    var bitSize = structure;
 
-			if (bitSize > 0) {
-				fieldValue = this.view.getUint8() >>> 8 - (this._bitShift + bitSize) & ~(-1 << bitSize) | fieldValue << bitSize;
-				this._bitShift += bitSize - 8; // passing negative value for next pass
-			}
+    if (this._bitShift < 0) {
+      var byteShift = this._bitShift >> 3; // Math.floor(_bitShift / 8)
 
-			return fieldValue;
-		}
+      this.skip(byteShift);
+      this._bitShift &= 7; // _bitShift + 8 * Math.floor(_bitShift / 8)
+    }
 
-		// f, 1, 2 means f(1, 2)
-		if (structure instanceof Function) {
-			return structure.apply(this, Array.prototype.slice.call(arguments, 1));
-		}
+    if (this._bitShift > 0 && bitSize >= 8 - this._bitShift) {
+      fieldValue = this.view.getUint8() & ~(-1 << 8 - this._bitShift);
+      bitSize -= 8 - this._bitShift;
+      this._bitShift = 0;
+    }
 
-		// 'int32', ... is a shortcut for ['int32', ...]
-		if (typeof structure === 'string') {
-			structure = Array.prototype.slice.call(arguments);
-		}
+    while (bitSize >= 8) {
+      fieldValue = this.view.getUint8() | fieldValue << 8;
+      bitSize -= 8;
+    }
 
-		// ['string', 256] means structure['string'](256)
-		if (structure instanceof Array) {
-			var _key = structure[0];
+    if (bitSize > 0) {
+      fieldValue = this.view.getUint8() >>> 8 - (this._bitShift + bitSize) & ~(-1 << bitSize) | fieldValue << bitSize;
+      this._bitShift += bitSize - 8; // passing negative value for next pass
+    }
 
-			if (!(_key in this.structure)) {
-				throw new Error('Missing structure for "' + _key + '"');
-			}
+    return fieldValue;
+  }
 
-			return this.parse.apply(this, [this.structure[_key]].concat(structure.slice(1)));
-		}
+  // f, 1, 2 means f(1, 2)
+  if (structure instanceof Function) {
+    return structure.apply(this, Array.prototype.slice.call(arguments, 1));
+  }
 
-		// {key: val} means {key: parse(val)}
-		if ((typeof structure === 'undefined' ? 'undefined' : _typeof(structure)) === 'object') {
-			var output = {};
-			var current = this.current;
+  // 'int32', ... is a shortcut for ['int32', ...]
+  if (typeof structure === 'string') {
+    structure = Array.prototype.slice.call(arguments);
+  }
 
-			this.current = output;
+  // ['string', 256] means structure['string'](256)
+  if (structure instanceof Array) {
+    var key = structure[0];
 
-			for (var key in structure) {
-				var value = this.parse(structure[key]);
-				// skipping undefined call results (useful for 'if' statement)
-				if (value !== undefined) {
-					output[key] = value;
-				}
-			}
+    if (!(key in this.structure)) {
+      throw new Error('Missing structure for "' + key + '"');
+    }
 
-			this.current = current;
+    return this.parse.apply(this, [this.structure[key]].concat(structure.slice(1)));
+  }
 
-			return output;
-		}
+  // {key: val} means {key: parse(val)}
+  if ((typeof structure === 'undefined' ? 'undefined' : _typeof(structure)) === 'object') {
+    var output = {};
+    var current = this.current;
 
-		throw new Error('Unknown structure type "' + structure + '"');
-	};
+    this.current = output;
 
-	var all = void 0;
-	if (typeof self !== 'undefined') {
-		all = self;
-	} else if (typeof window !== 'undefined') {
-		all = window;
-	} else if (typeof global !== 'undefined') {
-		all = global;
-	}
+    for (var _key in structure) {
+      var value = this.parse(structure[_key]);
+      // skipping undefined call results (useful for 'if' statement)
+      if (value !== undefined) {
+        output[_key] = value;
+      }
+    }
 
-	// Browser + Web Worker
-	all.jParser = jParser;
+    this.current = current;
 
-	// NodeJS + NPM
-	if (typeof module !== 'undefined') {
-		module.exports = jParser;
-	}
-})();
+    return output;
+  }
+
+  throw new Error('Unknown structure type "' + structure + '"');
+};
+
+var all = void 0;
+if (typeof self !== 'undefined') {
+  all = self;
+} else if (typeof window !== 'undefined') {
+  all = window;
+} else if (typeof global !== 'undefined') {
+  all = global;
+}
+
+// Browser + Web Worker
+all.jParser = jParser;
+
+// NodeJS + NPM
+if (typeof module !== 'undefined') {
+  module.exports = jParser;
+}
