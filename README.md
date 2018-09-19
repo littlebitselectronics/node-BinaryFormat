@@ -1,14 +1,23 @@
-<a href="http://blog.vjeux.com/2011/javascript/binaryparser-unleash-javascript-power.html">jParser</a> - Parsing binary files made easy.
-================================
+# Fork's Changes
 
-jParser makes it easy to parse binary files in Javascript.
+* ❏ Update dependencies
+* ❏ Code cleaning
+* ❏ New test framework
+* ❏ ES6
+* ❏ Distro
+* ❏ Update docs
+
+---
+
+# <a href="http://blog.vjeux.com/2011/javascript/binaryparser-unleash-javascript-power.html">jParser</a> - Parsing binary files made easy.
+
+jParser makes it easy to parse binary files in JavaScript.
 
  * You write the structure once, it gets parsed automatically.
  * The parsing process can be extended with custom functions. It allows to parse non trivial files with ease.
  * It works both in the browser and NodeJS as it is powered by [jDataView](https://github.com/vjeux/jDataView).
 
-API
-======
+# API
 
 Primitive Structures:
 
@@ -47,8 +56,7 @@ jParser Constructor:
     * ``data`` is a [jDataView](https://github.com/vjeux/jDataView). You can give pretty much anything (String, [ArrayBuffer](https://developer.mozilla.org/en/JavaScript_typed_arrays), [Node Buffer](http://nodejs.org/docs/v0.6.2/api/buffers.html)), it will be casted to jDataView automatically.
     * ``structure`` is an object with all the defined structures.
 
-Examples
-========
+# Examples
 
 **Basic C Structure**
 You have the ability to define C-like structures. It's a Javascript object where keys are labels and values are types.
@@ -175,9 +183,7 @@ file: {
 }
 ```
 
-
-Get Started
-=======
+# Get Started
 
 **NodeJS**: Just use ```npm``` to install ```jParser``` and you are set :)
 
@@ -214,8 +220,7 @@ $.get('file.bin', function (data) {
 </script>
 ```
 
-Caveats
-=======
+# Caveats
 
 This tool works thanks to a feature that is not in the Javascript specification: When you iterate over an object keys, the keys will be listed in their order of insertion. Note that Chrome and Opera do not respect this implicit rule for keys that are numbers.
 
@@ -225,8 +230,7 @@ If you follow those two rules, the library will work in all the current Javascri
  * Do not put the same key twice in the same object
 
 
-Demos
-=====
+# Demos
 
 **ICO Parser**. This is a basic example to parse a binary file in NodeJS. It shows how to solve many common issues with binary file parsing.
 
