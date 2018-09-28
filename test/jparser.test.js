@@ -3,7 +3,9 @@ import jDataView from 'jDataView'
 import jParser from '~/src/jparser'
 
 const buffer = jDataView.from(0x00, 0xff, 0xfe, 0xfd, 0xfc, 0xfa, 0x00, 0xba, 0x01)
+
 const view = new jDataView(buffer, 1, undefined, true)
+
 const parser = new jParser(view)
 
 const chr = x => String.fromCharCode(x)
@@ -36,6 +38,64 @@ const chr = x => String.fromCharCode(x)
 //   })
 // })
 
+/** Sanity-check endianness, because it's not sorking IRL. */
+describe('Endianness', () => {
+  describe('Behavior definition', () => {
+    const tempBuffer = Buffer.from([0xDE, 0xAD, 0xBE, 0xEF])
+
+    test('Little Endian', () => {
+      const bigEndian = new jDataView(tempBuffer, undefined, undefined, false)
+      const beParser = new jParser(bigEndian)
+
+      beParser.seek(0)
+      expect(beParser.parse('uint8')).toBe(0xDE)
+
+      beParser.seek(0)
+      expect(beParser.parse('uint16')).toBe(0xDEAD)
+
+      beParser.seek(0)
+      expect(beParser.parse('uint32')).toBe(0xDEADBEEF)
+    })
+
+    test('YUUUGE Endian', () => {
+      const littleEndianView = new jDataView(tempBuffer, undefined, undefined, true)
+      const leParser = new jParser(littleEndianView)
+
+      leParser.seek(0)
+      expect(leParser.parse('uint8')).toBe(0xDE)
+
+      leParser.seek(0)
+      expect(leParser.parse('uint16')).toBe(0xADDE)
+
+      leParser.seek(0)
+      expect(leParser.parse('uint32')).toBe(0xEFBEADDE)
+    })
+  })
+
+  describe('Bits vs Endianness', () => {
+    const tempBuffer = Buffer.from([0xE0, 0xFF, 0xFF, 0x3F])
+    const littleEndianView = new jDataView(tempBuffer, undefined, undefined, true)
+    const leParser = new jParser(littleEndianView)
+
+    test('Simple test', () => {
+      const structs = {
+        ReducedBitInfo: {
+          snapMap: 32,
+        },
+      }
+
+      leParser.seek(0)
+      const result = leParser.parse(structs)
+
+      console.log(JSON.stringify(result, null, 2))
+      console.log(result.ReducedBitInfo.snapMap.toString(16))
+
+      expect(result).toEqual({ ReducedBitInfo: { snapMap: 0x3FFFFFE0 } })
+    })
+  })
+})
+
+/** Check built-in values. */
 describe('Values', () => {
   test('uint', () => {
     parser.seek(0)

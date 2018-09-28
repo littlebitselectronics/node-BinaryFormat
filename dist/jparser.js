@@ -48,7 +48,10 @@ var jParser = function () {
     var xView = view;
 
     if (!(xView instanceof _jDataView2.default)) {
-      xView = new _jDataView2.default(view, undefined, undefined, true);
+      console.log('jParser#ctor Creating jDataView');
+      xView = new _jDataView2.default(view, undefined, undefined, false);
+    } else {
+      console.log('jParser#ctor Not creating jDataView');
     }
 
     this.view = xView;
