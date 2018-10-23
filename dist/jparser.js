@@ -48,10 +48,7 @@ var jParser = function () {
     var xView = view;
 
     if (!(xView instanceof _jDataView2.default)) {
-      console.log('jParser#ctor Creating jDataView');
-      xView = new _jDataView2.default(view, undefined, undefined, false);
-    } else {
-      console.log('jParser#ctor Not creating jDataView');
+      xView = new _jDataView2.default(view, undefined, undefined, true);
     }
 
     this.view = xView;
@@ -147,6 +144,9 @@ jParser.prototype.structure = {
 
 jParser.prototype.parse = function (structure) {
   if (typeof structure === 'number') {
+    console.log('structure number', structure);
+    console.log('this._bitShift', this._bitShift);
+
     var fieldValue = 0;
     var bitSize = structure;
 

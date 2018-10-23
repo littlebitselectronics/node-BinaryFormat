@@ -101,9 +101,6 @@ jParser.prototype.structure = {
 
 jParser.prototype.parse = function (structure) {
   if (typeof structure === 'number') {
-    console.log('structure number', structure)
-    console.log('this._bitShift', this._bitShift)
-
     let fieldValue = 0
     let bitSize = structure
 
