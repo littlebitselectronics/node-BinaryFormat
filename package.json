@@ -1,6 +1,6 @@
 {
   "name": "BinaryFormat",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Two-way custom binary seralization",
   "main": "dist/jparser.js",
   "directories": {
@@ -28,7 +28,7 @@
   "license": "",
   "readmeFilename": "README.md",
   "dependencies": {
-    "jDataView": "^2.3.0"
+    "jdataview": "^2.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
