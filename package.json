@@ -1,6 +1,6 @@
 {
   "name": "BinaryFormat",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Two-way custom binary seralization",
   "main": "dist/jparser.js",
   "directories": {
@@ -23,12 +23,13 @@
   ],
   "author": "Robert Borg",
   "contributors": [
-    "Dave Newton <davelnewton@gmail.com>"
+    "Dave Newton <davelnewton@gmail.com>",
+    "John Perkins <jeperkins4@gmail.com>"
   ],
   "license": "",
   "readmeFilename": "README.md",
   "dependencies": {
-    "jdataview": "^2.5.0"
+    "jDataView": "^2.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
