@@ -4,9 +4,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _jDataView = require('jDataView');
+var _jdataview = require('jdataview');
 
-var _jDataView2 = _interopRequireDefault(_jDataView);
+var _jdataview2 = _interopRequireDefault(_jdataview);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -47,8 +47,8 @@ var jParser = function () {
 
     var xView = view;
 
-    if (!(xView instanceof _jDataView2.default)) {
-      xView = new _jDataView2.default(view, undefined, undefined, true);
+    if (!(xView instanceof _jdataview2.default)) {
+      xView = new _jdataview2.default(view, undefined, undefined, true);
     }
 
     this.view = xView;

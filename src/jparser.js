@@ -1,4 +1,4 @@
-import jDataView from 'jDataView'
+import jDataView from 'jdataview'
 
 function ClonedObject() {}
 

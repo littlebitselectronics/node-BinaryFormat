@@ -1,6 +1,6 @@
 {
   "name": "BinaryFormat",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Two-way custom binary seralization",
   "main": "dist/jparser.js",
   "directories": {
@@ -29,7 +29,7 @@
   "license": "",
   "readmeFilename": "README.md",
   "dependencies": {
-    "jDataView": "^2.3.0"
+    "jdataview": "^2.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -38,12 +38,12 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "eslint": "^5.4.0",
+    "eslint": "^8.12.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-babel": "^5.2.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.11.1",
-    "jest": "^23.6.0"
+    "jest": "^27.5.1"
   }
 }
